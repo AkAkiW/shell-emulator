@@ -15,7 +15,7 @@ public class ShellWindow extends JFrame {
     private final Shell shell;
     private final OsInfo osInfo;
 
-    public ShellWindow(){
+    public ShellWindow(StartupScriptResult scriptResult){
         osInfo = new OsInfo();
         setTitle("Эмулятор - [" + osInfo.getUsername() + "@" + osInfo.getHostname() + "]");
         setSize(WINDOW_WIDTH,WINDOW_HEIGHT);
@@ -26,8 +26,11 @@ public class ShellWindow extends JFrame {
 
         outputArea = new JTextArea();
         inputField = new JTextField();
-
         outputArea.setEditable(false);
+
+        for (String output : scriptResult.outputs()) {
+            outputArea.append(output + "\n");
+        }
 
         JScrollPane scrollPane = new JScrollPane(outputArea);
 
@@ -38,9 +41,7 @@ public class ShellWindow extends JFrame {
 
         inputField.addActionListener(event -> {
             String input = inputField.getText();
-
             outputArea.append("> " + input + "\n");
-
             try {
                 CommandResult result = shell.execute(input);
 
