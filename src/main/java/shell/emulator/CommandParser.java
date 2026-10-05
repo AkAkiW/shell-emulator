@@ -5,47 +5,56 @@ import java.util.List;
 
 public class CommandParser {
 
+    private static final char NO_QUOTE = '\0';
     private static final char SINGLE_QUOTE = '\'';
     private static final char DOUBLE_QUOTE = '"';
     private static final char SPACE = ' ';
 
     public List<String> parse(String input) {
         List<String> arguments = new ArrayList<>();
-        StringBuilder currentArgument = new StringBuilder();
-
-        boolean insideSingleQuotes = false;
-        boolean insideDoubleQuotes = false;
+        StringBuilder current = new StringBuilder();
+        char quote = NO_QUOTE;
 
         for (char character : input.toCharArray()) {
-            if (character == SINGLE_QUOTE && !insideDoubleQuotes) {
-                insideSingleQuotes = !insideSingleQuotes;
-            } else if (character == DOUBLE_QUOTE && !insideSingleQuotes) {
-                insideDoubleQuotes = !insideDoubleQuotes;
-            } else if (character == SPACE
-                    && !insideSingleQuotes
-                    && !insideDoubleQuotes) {
-                addArgument(currentArgument, arguments);
+            char newQuote = updateQuote(character, quote);
+
+            if (newQuote != quote) {
+                quote = newQuote;
+            } else if (character == SPACE && quote == NO_QUOTE) {
+                addArgument(current, arguments);
             } else {
-                currentArgument.append(character);
+                current.append(character);
             }
         }
 
-        if (insideSingleQuotes || insideDoubleQuotes){
+        if (quote != NO_QUOTE) {
             throw new CommandParseException("Незакрытая кавычка");
         }
 
-        addArgument(currentArgument, arguments);
-
+        addArgument(current, arguments);
         return arguments;
     }
 
+    private char updateQuote(char character, char quote) {
+        boolean isQuote = character == SINGLE_QUOTE
+                || character == DOUBLE_QUOTE;
+
+        if (!isQuote) {
+            return quote;
+        }
+        if (quote == NO_QUOTE) {
+            return character;
+        }
+        return quote == character ? NO_QUOTE : quote;
+    }
+
     private void addArgument(
-            StringBuilder currentArgument,
+            StringBuilder current,
             List<String> arguments
     ) {
-        if (!currentArgument.isEmpty()) {
-            arguments.add(currentArgument.toString());
-            currentArgument.setLength(0);
+        if (!current.isEmpty()) {
+            arguments.add(current.toString());
+            current.setLength(0);
         }
     }
 }

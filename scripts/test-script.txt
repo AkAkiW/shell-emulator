@@ -1,0 +1,5 @@
+ls
+cb /home
+ls "my folder"
+ls "не закрыта
+cd /home
