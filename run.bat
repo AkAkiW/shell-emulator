@@ -2,13 +2,24 @@
 chcp 65001 >nul
 setlocal
 
-rem Go to the directory where this script lives (project root)
 cd /d "%~dp0"
 
-rem "call" is required: mvn is a .cmd file, without it the script would stop after mvn
-call mvn compile
+where javac >nul 2>nul
 if errorlevel 1 (
-    echo Build failed.
+    if exist "%JAVA_HOME%\bin\javac.exe" (
+        set "PATH=%JAVA_HOME%\bin;%PATH%"
+    ) else (
+        echo Ошибка: не найден компилятор javac.
+        echo Установите JDK 21, например Eclipse Temurin: https://adoptium.net
+        exit /b 1
+    )
+)
+
+if not exist target\classes mkdir target\classes
+
+javac -encoding UTF-8 -d target\classes src\main\java\shell\emulator\*.java
+if errorlevel 1 (
+    echo Ошибка компиляции.
     exit /b 1
 )
 

@@ -6,20 +6,21 @@
 
 ## Требования
 
-- Java 21
-- Maven
+- JDK 21 (должны быть доступны команды `java` и `javac`)
 
-## Сборка
+Maven для запуска **не требуется**: скрипты компилируют исходники напрямую через `javac`. Файл `pom.xml` при этом сохранён — он нужен только для импорта проекта в IDE.
 
-Для сборки проекта из корневого каталога:
+## Сборка и запуск
 
-    mvn compile
+Эмулятор запускается скриптами `run.sh` (Linux, macOS) и `run.bat` (Windows). Скрипт сначала компилирует исходники в `target/classes`, затем запускает эмулятор, поэтому отдельная сборка не нужна.
 
-## Запуск
-
-Для запуска эмулятора используется скрипт `run.sh`.
+Linux, macOS:
 
     ./run.sh <путь_к_VFS> <путь_к_стартовому_скрипту>
+
+Windows (cmd):
+
+    run.bat <путь_к_VFS> <путь_к_стартовому_скрипту>
 
 Например:
 
@@ -39,6 +40,10 @@
     Стартовый скрипт: /home/user/shell-emulator/scripts/test-script.txt
 
 Путь к VFS на текущем этапе принимается и отображается как параметр конфигурации. Команды `ls` и `cd` пока являются заглушками и не выполняют операции с VFS.
+
+При желании проект можно собрать и через Maven (опционально):
+
+    mvn compile
 
 ## Графический интерфейс
 
@@ -142,14 +147,17 @@
 
 ## Тестовые скрипты операционной системы
 
-В каталоге `tests/` находятся скрипты реальной операционной системы, которые запускают эмулятор и передают ему параметры командной строки.
+В каталоге `tests/` находятся скрипты реальной операционной системы, которые запускают эмулятор и передают ему параметры командной строки. Для каждого сценария есть версия для Linux/macOS (`.sh`) и для Windows (`.bat`).
 
     tests/
     ├── test-default.sh
+    ├── test-default.bat
     ├── test-alt-script.sh
-    └── test-alt-vfs.sh
+    ├── test-alt-script.bat
+    ├── test-alt-vfs.sh
+    └── test-alt-vfs.bat
 
-### `test-default.sh`
+### `test-default.sh` / `test-default.bat`
 
 Использует стандартный VFS и стандартный стартовый скрипт:
 
@@ -160,7 +168,11 @@
 
     ./tests/test-default.sh
 
-### `test-alt-script.sh`
+Windows:
+
+    tests\test-default.bat
+
+### `test-alt-script.sh` / `test-alt-script.bat`
 
 Использует стандартный VFS и альтернативный стартовый скрипт:
 
@@ -171,7 +183,11 @@
 
     ./tests/test-alt-script.sh
 
-### `test-alt-vfs.sh`
+Windows:
+
+    tests\test-alt-script.bat
+
+### `test-alt-vfs.sh` / `test-alt-vfs.bat`
 
 Использует альтернативный физический VFS и стандартный стартовый скрипт:
 
@@ -182,6 +198,10 @@
 
     ./tests/test-alt-vfs.sh
 
+Windows:
+
+    tests\test-alt-vfs.bat
+
 Таким образом, тестовые скрипты демонстрируют передачу обоих поддерживаемых параметров командной строки и изменение каждого из них.
 
 ## Структура проекта
@@ -191,6 +211,7 @@
     ├── README.md
     ├── pom.xml
     ├── run.sh
+    ├── run.bat
     ├── alt-vfs/
     │   └── .gitkeep
     ├── src/
@@ -212,8 +233,11 @@
     │                   └── StartupScriptResult.java
     ├── tests/
     │   ├── test-default.sh
+    │   ├── test-default.bat
     │   ├── test-alt-script.sh
-    │   └── test-alt-vfs.sh
+    │   ├── test-alt-script.bat
+    │   ├── test-alt-vfs.sh
+    │   └── test-alt-vfs.bat
     ├── scripts/
     │   ├── test-script.txt
     │   └── test-alt-script.txt
@@ -224,5 +248,4 @@
 
 - Java 21
 - Swing
-- Maven
 - Git
